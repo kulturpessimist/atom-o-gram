@@ -13,23 +13,19 @@ class RubyRc4
     end    
   end
     
-  def encrypt!(text)
-    process text
-  end  
-  
   def encrypt(text)
     process text.dup
   end 
 
-  def encrypt_url_safe(text)
-    (string_to_hex ( process text.dup )).hex.to_s(36)
+  def encrypt_hex(text)
+  	c = process text.dup
+    string_to_hex ( c )
   end 
 
-  def decrypt_url_safe(text)
-    process hex_to_string( '%024x' % text.to_i(36) ) 
+  def decrypt_hex(text)
+  	x = hex_to_string( text.dup )
+    process x.dup
   end 
-  
-  alias_method :decrypt, :encrypt
   
   private
 

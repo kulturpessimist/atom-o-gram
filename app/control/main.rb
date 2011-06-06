@@ -35,20 +35,14 @@ class AoGMain < Sinatra::Base
 			config.client_id = options.instagram[:client_id]
 		  	config.client_secret = options.instagram[:client_secret]
 		end
+		@name = options.name
 		@me = request.scheme+"://"+request.host_with_port
-		@rc4 = RubyRc4.new( options.secret )
+		@ayb = AllYourBase::Are.new
 	end
 	
 	get "/" do
-		crypt = @rc4.encrypt_url_safe('Kno brings textbooks to iPad, millions of children now dread getting Apple tablet for Christmas')
-		decrypt = "jeferj7d1ekmskxtya60beuf3nvcwxj7xv2wtj33w9rip0c8es7mg6a9zlmwq656dcqqn2z93skxqg7hiyweofc96nsvgbmw558h1e7iugcwtynbxscpdpcfnalhttcx9zqa3ec9t0etif3temb"
-	
-	  	html = '<a href="/oauth/connect">Connect with Instagram</a><br/>'
-		html += @rc4.encrypt('Kno brings textbooks to iPad, millions of children now dread getting Apple tablet for Christmas')+"<br/>"
-		html += crypt+"<br/>"
-		html += ('%024x' % crypt.to_i(36))+"<br/>"
 		
-		html += @rc4.decrypt_url_safe(decrypt)+"<br/>"
+	  	html = '<a href="/oauth/connect">Connect with Instagram</a><br/><br/>'
 		
 		html
 	end
@@ -58,57 +52,40 @@ class AoGMain < Sinatra::Base
 	end
 	
 	get "/oauth/callback" do
-	  	response = Instagram.get_access_token(params[:code], :redirect_uri => options.instagram["callback"])
-	  	session[:access_token] = response.access_token
-	  	# access token wird rc4 verschlüsselt in die URL codiert...
-	  	redirect "/feed"
-	end
-	
-	get "/feed" do
-	  	client = Instagram.client(:access_token => session[:access_token])
-	  	user = client.user
-	
-	  	html = "<h1>#{user.username}'s recent photos</h1>"
-	  	for media_item in client.user_recent_media
-	  		html << "<img src='#{media_item.images.thumbnail.url}'>"
-	  	end
-	  	
-	  	html
-	end
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	def cached_loockup id
-		begin 
-			result = @CACHE.get(id.to_s) || ''
-			return result
-		rescue Exception=>e
-			p "** no cached version of "+id+" available **"
-			result = @db.get(id)
-			if result["_id"].length > 0
- 				@CACHE.set(id, result)
- 				return result
-			else
-				return {}
-			end	
-		end
-	end
+		encryptor = RubyRc4.new( options.secret )
 
+	  	response = Instagram.get_access_token(params[:code], :redirect_uri => @me+options.instagram[:callback])
+		
+		# access token wird rc4 verschlüsselt in die URL codiert...
+		crypt = encryptor.encrypt_hex( response.access_token )
+		crypt.upcase!
+	  	access_token = crypt.from_base_16.to_base_62
+	  	
+	  	redirect "/feed/#{access_token}"
+	end
+	
+	get "/feed/:token" do
+		content_type :xml
+		
+		# access token decrypt
+		decryptor = RubyRc4.new( options.secret )
+		@token = params[:token]
+		@access_token = decryptor.decrypt_hex( params[:token].from_base_62.to_base_16.downcase! )
+			
+	  	client = Instagram.client(:access_token => @access_token)
+	  	@feed = client.user_media_feed
+		
+		#y @feed
+				
+		erb :atom		
+				
+	  	#html = "<h1>your media feed!</h1>"
+	  	#for media_item in feed#.user_recent_media
+	  		#html << "<img src='#{media_item.images.thumbnail.url}'>"
+	  	#	html << "<img src='#{media_item.images.low_resolution.url}'>"
+	  	#end
+	  	
+	  	#html
+	end
 	
 end
