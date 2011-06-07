@@ -29,7 +29,7 @@ class AoGMain < Sinatra::Base
 	enable :static, :sessions, :method_override
 	##
 	before do
-		options.force_ssl ? secure! : ''
+		require_ssl?
 		Instagram.configure do |config|
 			config.client_id = options.instagram[:client_id]
 		  	config.client_secret = options.instagram[:client_secret]
