@@ -29,38 +29,34 @@ class AoGMain < Sinatra::Base
 	enable :static, :sessions, :method_override
 	##
 	before do
-		#@CACHE = Memcached.new
-		#@bp = BoxcarAPI::Provider.new(options.boxcar[:provider_key], options.boxcar[:provider_secret])
+		options.force_ssl ? secure! : ''
 		Instagram.configure do |config|
 			config.client_id = options.instagram[:client_id]
 		  	config.client_secret = options.instagram[:client_secret]
 		end
 		@name = options.name
-		@me = request.scheme+"://"+request.host_with_port
+		@google_analytics = options.google_analytics
 		@ayb = AllYourBase::Are.new
 	end
 	
-	get "/" do
-		
-	  	html = '<a href="/oauth/connect">Connect with Instagram</a><br/><br/>'
-		
-		html
+	get "/" do	
+		erb :main
 	end
 	
 	get "/oauth/connect" do
-	  	redirect Instagram.authorize_url(:redirect_uri => @me+options.instagram[:callback])
+		# go on...
+	  	redirect Instagram.authorize_url(:redirect_uri => options.instagram[:callback])
 	end
 	
 	get "/oauth/callback" do
+		#load the objects...
 		encryptor = RubyRc4.new( options.secret )
-
-	  	response = Instagram.get_access_token(params[:code], :redirect_uri => @me+options.instagram[:callback])
-		
-		# access token wird rc4 verschlüsselt in die URL codiert...
+	  	response = Instagram.get_access_token(params[:code], :redirect_uri => options.instagram[:callback])
+		# crypt token with rc4 and place it in URL...
 		crypt = encryptor.encrypt_hex( response.access_token )
 		crypt.upcase!
 	  	access_token = crypt.from_base_16.to_base_62
-	  	
+	  	# go on...
 	  	redirect "/feed/#{access_token}"
 	end
 	
@@ -71,21 +67,16 @@ class AoGMain < Sinatra::Base
 		decryptor = RubyRc4.new( options.secret )
 		@token = params[:token]
 		@access_token = decryptor.decrypt_hex( params[:token].from_base_62.to_base_16.downcase! )
-			
+		# initiate the client
 	  	client = Instagram.client(:access_token => @access_token)
+	  	# gather some user infos
+	  	user = client.user
+	  	@username = user.username
+	  	@profile = user.profile_picture
+	  	#load the feed
 	  	@feed = client.user_media_feed
-		
-		#y @feed
-				
+		# render the atom
 		erb :atom		
-				
-	  	#html = "<h1>your media feed!</h1>"
-	  	#for media_item in feed#.user_recent_media
-	  		#html << "<img src='#{media_item.images.thumbnail.url}'>"
-	  	#	html << "<img src='#{media_item.images.low_resolution.url}'>"
-	  	#end
-	  	
-	  	#html
 	end
 	
 end

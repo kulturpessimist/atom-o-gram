@@ -1,9 +1,4 @@
 sinatra
-memcached
 iconv
 instagram
 all-your-base
-
-boxcar_api
-httparty
-couchrest

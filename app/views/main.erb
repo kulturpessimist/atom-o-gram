@@ -1,0 +1,68 @@
+<!doctype html>  
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title><%= @name %></title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon-iphone.png" />
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-touch-icon-ipad.png" />
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-touch-icon-iphone4.png" />
+  
+  <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+  
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <link  href="https://fonts.googleapis.com/css?family=Cabin+Sketch:bold" rel="stylesheet" type="text/css" >
+  <link  href="https://fonts.googleapis.com/css?family=Cabin:400,400italic,500,500italic,600,600italic,bold,bolditalic" rel="stylesheet" type="text/css" >
+</head>
+
+<body>
+
+  <div id="container">
+    <header>
+		Atom-o-gram
+    </header>
+    
+    <div id="main">
+		You love 
+			<a href="http://instagr.am/" target="_blank">Instagram</a> and 
+			<a href="http://extragr.am/" target="_blank">all</a> 
+			<a href="http://web.stagram.com/" target="_blank">the</a> 
+			<a href="http://inkstagram.com" target="_blank">webserives</a> 
+		around? <br/>
+		You are looking for a tiny tool to integrate Instagram <br/>
+		in your Desktop-RSS-Workflow-Thingy? Just hit „Connect”. <br/>
+		<br/><br/>
+		<button type="button" class="css3button" onclick="document.location.href='/oauth/connect'">Connect with Instagram</button>
+    </div>
+    
+    <footer>
+		<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-text="I love #Instagram as Atom/RSS Feed via Atom-o-gram ">Tweet</a>
+		<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script> 
+		<g:plusone></g:plusone>
+   		<br/><br/><br/><br/>
+		&copy; 2011 <a href="http://con.sume.org" target="_blank">con.sume.org</a>
+		 • Your photos are never stored on this server 
+		 • You can revoke access everytime on the instagram website 
+		 • All product and company names herein may be trademarks of their respective owners
+    </footer>
+  </div> 
+  
+  <script>
+   var _gaq = [['_setAccount', '<%=@google_analytics%>'], ['_trackPageview']];
+   (function(d, t) {
+    var g = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    g.async = true;
+    g.src = ('https:' == location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g, s);
+   })(document, 'script');
+  </script>
+  
+</body>
+</html>

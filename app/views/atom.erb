@@ -3,25 +3,25 @@
 <feed xmlns="http://www.w3.org/2005/Atom" 
       xmlns:dc="http://purl.org/dc/elements/1.1/">
 	
-	<id>feed:<%= @token %></id>
-	<title type="text"></title>
-	<subtitle type="text"></subtitle>
-	<updated><%= Time.now.strftime("%FT%T-%z") %></updated>
+	<id>https://atom-o-gram.heroku.com/feed/<%= @token %></id>
+	<title type="text"><%= @username %>s instagram feed  • <%= @name%></title>
+	<subtitle type="text">Desktop-RSS-Workflow-Thingy for Instagram</subtitle>
+	<updated><%= Time.now.strftime("%FT%TZ") %></updated>
 
 	<link rel="alternate" type="text/html" hreflang="en" href="http://inkstagram.com/#/feed"/>
 	<link rel="self" type="application/atom+xml" href="https://atom-o-gram.heroku.com/feed/<%= @token %>"/>
 
-	<icon>/images/favicon.ico</icon>
-	<logo>/images/logo.jpg</logo>
+	<icon><%= @profile %></icon>
+	<logo><%= @profile %></logo>
 	<generator uri="https://atom-o-gram.heroku.com/" version="1.0"> <%= @name %> </generator>
        	
     <% @feed.each do |item| %>
     
 	<entry>
-		<id><%=item.id %></id>
+		<id>http://inkstagram.com/#/photos/<%=item.id %></id>
 		<title><%= !item.caption.nil? ? item.caption.text : "" %></title>
-		<published><%= Time.at(item.created_time.to_i).strftime("%FT%T-%z") %></published>
-		<updated><%= Time.at(item.created_time.to_i).strftime("%FT%T-%z") %></updated>
+		<published><%= Time.at(item.created_time.to_i).strftime("%FT%TZ") %></published>
+		<updated><%= Time.at(item.created_time.to_i).strftime("%FT%TZ") %></updated>
 		<author>
 			<name><%= item.user.fullname||item.user.username %></name>
 			<uri>http://inkstagram.com/#/users/<%= item.user.id%></uri>
@@ -29,10 +29,11 @@
 		<rights>copyright <%= Time.at(item.created_time.to_i).strftime("%Y") %> <%= item.user.fullname||item.user.username %></rights>
 
 		<link href="<%= item.link %>" />
-		<summary><%= !item.caption.nil? ? item.caption.text : "" %></summary>
+		<summary type="html">
+			<%= !item.caption.nil? ? item.caption.text : "" %> <br/>
+			<img src="<%= item.images.low_resolution.url %>" />
+		</summary>
 		<content type="image/png" src="<%= item.images.low_resolution.url %>" />
-		
-		<content type="text"><%#= item.to_json %></content
 	</entry>
   	
   	<% end %>
