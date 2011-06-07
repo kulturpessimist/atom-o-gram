@@ -17,10 +17,10 @@ module Sinatra
 	# @return [boolean] value of options.force_ssl
   	def require_ssl?
 	  	# change later to request.secure?
-		if !( (@env['HTTP_X_FORWARDED_PROTO'] || @env['rack.url_scheme']) == 'https' )
+		if !request.secure?
 			if options.force_ssl
 				p "ssl is required!"
-				return true
+				secure!
 			end
 		end
 		return false
