@@ -1,5 +1,4 @@
 require 'config/deps'
-require File.expand_path(File.dirname(__FILE__) + '/../helpers/auth_helper_api')
 require File.expand_path(File.dirname(__FILE__) + '/../helpers/ssl_helper')
 require File.expand_path(File.dirname(__FILE__) + '/../libs/rc4')
 
